@@ -1,0 +1,326 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Folio Super Agora v1.0.0\n"
+"POT-Creation-Date: 2023-02-07 20:38+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_n_noop:1,2;_x:1,2c;_nx:4c,1,2;"
+"_nx_noop:4c,1,2;_ex:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;"
+"esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPathExcluded-2: node_modules\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: assets\n"
+
+#: classes/class-folio-super-agora-settings.php:39
+#: classes/class-folio-super-agora-settings.php:40
+msgid "Folio SuperAgora"
+msgstr "Folio SuperÁgora"
+
+#: classes/class-folio-super-agora-settings.php:63
+msgid "SuperAgora Settings"
+msgstr "Configuración SuperÁgora"
+
+#: classes/class-folio-super-agora-settings.php:70
+msgid "Is SuperAgora?"
+msgstr "¿Es SuperÁgora?"
+
+#: classes/class-folio-super-agora-settings.php:74
+msgid "Enable this site as SuperAgora"
+msgstr "Habilitar este sitio como SuperÁgora"
+
+#: classes/class-folio-super-agora-settings.php:79
+msgid "Redirect Agoras Frontend?"
+msgstr "¿Redirigir Ágoras Frontend?"
+
+#: classes/class-folio-super-agora-settings.php:83
+msgid "Redirect Agoras Frontend to SuperAgora Frontend"
+msgstr "Redirigir Ágoras Frontend a SuperÁgora Frontend"
+
+#: classes/class-folio-super-agora-settings.php:88
+msgid "Redirect Agoras Backend?"
+msgstr "¿Redirigir Ágoras Backend?"
+
+#: classes/class-folio-super-agora-settings.php:92
+msgid "Redirect Agoras Backend to SuperAgora Backend"
+msgstr "Redirigir Ágoras Backend a SuperÁgora Backend"
+
+#: classes/class-folio-super-agora-settings.php:98
+msgid "SuperAgora Classrooms"
+msgstr "Aulas de SuperAgora"
+
+#: classes/class-folio-super-agora-settings.php:102
+msgid "Separate classroom codes with commas"
+msgstr "Separe los códigos de aula con comas"
+
+#: classes/class-folio-super-agora-settings.php:143
+msgid "Here you can set the SuperAgora settings."
+msgstr "Aquí puede establecer la configuración de la SuperÁgora."
+
+#: classes/class-folio-super-agora-settings.php:156
+msgid "SuperAgora Sync"
+msgstr "Sincronizar SuperÁgora"
+
+#: classes/class-folio-super-agora-settings.php:157
+msgid "Here you can sync the SuperAgora ActiUOCs, SuperTags and Users."
+msgstr ""
+"Aquí puedes sincronizar las ActiUOCs, SuperEtiquetas y Usuarios de la "
+"SuperÁgora."
+
+#: classes/class-folio-super-agora-settings.php:170
+msgid "You do not have permission to perform this action"
+msgstr "No tienes permiso para realizar esta acción"
+
+#: classes/class-folio-super-agora-settings.php:181
+msgid "Sync up"
+msgstr "Sincronizar"
+
+#: classes/class-folio-super-agora-settings.php:516
+msgid "Synchronization finished successfully"
+msgstr "¡La sincronización se completó con éxito!"
+
+#: classes/class-folio-super-agora-supertags.php:43
+msgctxt "taxonomy general name"
+msgid "SuperTags"
+msgstr "SuperEtiquetas"
+
+#: classes/class-folio-super-agora-supertags.php:44
+msgctxt "taxonomy singular name"
+msgid "SuperTag"
+msgstr "SuperEtiqueta"
+
+#: classes/class-folio-super-agora-supertags.php:45
+msgid "Search SuperTags"
+msgstr "Buscar SuperEtiquetas"
+
+#: classes/class-folio-super-agora-supertags.php:46
+msgid "Popular SuperTags"
+msgstr "SuperEtiquetas más usadas"
+
+#: classes/class-folio-super-agora-supertags.php:47
+msgid "All SuperTags"
+msgstr "Todas las SuperEtiquetas"
+
+#: classes/class-folio-super-agora-supertags.php:48
+msgid "Edit SuperTag"
+msgstr "Editar SuperEtiqueta"
+
+#: classes/class-folio-super-agora-supertags.php:49
+msgid "Update SuperTag"
+msgstr "Actualizar SuperEtiqueta"
+
+#: classes/class-folio-super-agora-supertags.php:50
+msgid "Add New SuperTag"
+msgstr "Añadir nueva SuperEtiqueta"
+
+#: classes/class-folio-super-agora-supertags.php:51
+msgid "New SuperTag Name"
+msgstr "Nombre de la Nueva SuperEtiqueta"
+
+#: classes/class-folio-super-agora-supertags.php:52
+msgid "Separate supertags with commas"
+msgstr "Separa las superetiquetas con comas"
+
+#: classes/class-folio-super-agora-supertags.php:53
+msgid "Add or remove supertags"
+msgstr "Añadir o eliminar superetiquetas"
+
+#: classes/class-folio-super-agora-supertags.php:54
+msgid "Choose from the most used supertags"
+msgstr "Escoger las superetiquetas más usadas"
+
+#: classes/class-folio-super-agora-supertags.php:55
+msgid "No supertags found."
+msgstr "No se encontraron superetiquetas."
+
+#: classes/class-folio-super-agora-supertags.php:56
+#: classes/class-folio-super-agora-widget-supertags.php:20
+msgid "SuperTags"
+msgstr "SuperEtiquetas"
+
+#: classes/class-folio-super-agora-supertags.php:320
+msgid "Not specified"
+msgstr "No especificado"
+
+#: classes/class-folio-super-agora-supertags.php:365
+msgid "No terms found"
+msgstr "No se encontraron términos"
+
+#: classes/class-folio-super-agora-widget-activities.php:20
+msgid "SuperAgora ActiFolios"
+msgstr "SuperÁgora ActiFolios"
+
+#: classes/class-folio-super-agora-widget-activities.php:23
+msgid "Widget SuperAgora ActiFolios"
+msgstr "Widget SuperÁgora ActiFolios"
+
+#: classes/class-folio-super-agora-widget-activities.php:69
+#: classes/class-folio-super-agora-widget-users.php:64
+msgid "No classrooms found"
+msgstr "No se encontraron aulas"
+
+#: classes/class-folio-super-agora-widget-activities.php:76
+msgid "No actiuocs found"
+msgstr "No se encontraron actiuocs"
+
+#: classes/class-folio-super-agora-widget-activities.php:162
+#, php-format
+msgid "%1$s actifolios of %2$s classrooms"
+msgstr "%1$s actifolios de %2$s aulas"
+
+#: classes/class-folio-super-agora-widget-activities.php:173
+#: classes/class-folio-super-agora-widget-users.php:276
+msgid "Classrooms:"
+msgstr "Aulas:"
+
+#: classes/class-folio-super-agora-widget-activities.php:175
+#: classes/class-folio-super-agora-widget-users.php:278
+msgid "Close"
+msgstr "Cerrar"
+
+#: classes/class-folio-super-agora-widget-activities.php:195
+#: classes/class-folio-super-agora-widget-users.php:190
+msgid "Classroom where I am"
+msgstr "Aula donde estoy"
+
+#: classes/class-folio-super-agora-widget-activities.php:222
+msgid "There are not actiFolio with post related"
+msgstr "No hay entradas con actiFolios relacionadas"
+
+#: classes/class-folio-super-agora-widget-activities.php:269
+#: classes/class-folio-super-agora-widget-users.php:166
+msgid "Subject"
+msgstr "Asignatura"
+
+#: classes/class-folio-super-agora-widget-activities.php:280
+#: classes/class-folio-super-agora-widget-users.php:177
+#, php-format
+msgid "Classroom %s"
+msgstr "Aula %s"
+
+#: classes/class-folio-super-agora-widget-activities.php:314
+#: classes/class-folio-super-agora-widget-supertags.php:136
+#: classes/class-folio-super-agora-widget-users.php:364
+msgid "Title:"
+msgstr "Título:"
+
+#: classes/class-folio-super-agora-widget-activities.php:321
+msgid "Max number of ActiFolio to show per Classroom:"
+msgstr "Nº máximo de ActiFolios a mostrar por Aula:"
+
+#: classes/class-folio-super-agora-widget-activities.php:326
+#: classes/class-folio-super-agora-widget-supertags.php:148
+msgid "(0 or empty for unlimited)"
+msgstr "(0 o vacío para ilimitados)"
+
+#: classes/class-folio-super-agora-widget-activities.php:333
+msgid "Show number of posts"
+msgstr "Mostrar el número de entradas"
+
+#: classes/class-folio-super-agora-widget-supertags.php:23
+msgid "Widget SuperTags"
+msgstr "Widget SuperEtiquetas"
+
+#: classes/class-folio-super-agora-widget-supertags.php:65
+#, php-format
+msgid "%1$s supertags"
+msgstr "%1$s superetiquetas"
+
+#: classes/class-folio-super-agora-widget-supertags.php:94
+msgid "There are not SuperTags with post related"
+msgstr "No hay entradas con SuperEtiquetas relacionadas"
+
+#: classes/class-folio-super-agora-widget-supertags.php:143
+msgid "Max number of SuperTags to show:"
+msgstr "Nº máximo de SuperEtiquetas a mostrar :"
+
+#: classes/class-folio-super-agora-widget-supertags.php:155
+msgid "Show number of posts:"
+msgstr "Mostrar el número de entradas:"
+
+#: classes/class-folio-super-agora-widget-supertags.php:160
+msgid "Order by:"
+msgstr "Ordenar por:"
+
+#: classes/class-folio-super-agora-widget-supertags.php:165
+#: classes/class-folio-super-agora-widget-users.php:301
+msgid "Name"
+msgstr "Nombre"
+
+#: classes/class-folio-super-agora-widget-supertags.php:168
+msgid "Count"
+msgstr "Cantidad"
+
+#: classes/class-folio-super-agora-widget-supertags.php:174
+#: classes/class-folio-super-agora-widget-users.php:313
+msgid "Order:"
+msgstr "Orden:"
+
+#: classes/class-folio-super-agora-widget-users.php:21
+msgid "SuperAgora Participants"
+msgstr "SuperÁgora Participantes"
+
+#: classes/class-folio-super-agora-widget-users.php:24
+msgid "Widget SuperAgora Participants"
+msgstr "Widget de participantes de la SuperÁgora"
+
+#: classes/class-folio-super-agora-widget-users.php:122
+msgid "Log in to see classroom mates"
+msgstr "Acceder para ver a los compañeros de clase activos."
+
+#: classes/class-folio-super-agora-widget-users.php:201
+#, php-format
+msgid "Visit %s's Folio"
+msgstr "Visita el Folio de %s"
+
+#: classes/class-folio-super-agora-widget-users.php:202
+#, php-format
+msgid "Entries by %s published in the Agora"
+msgstr "Entradas de %s publicadas en el Ágora"
+
+#: classes/class-folio-super-agora-widget-users.php:233
+msgid "(opens in new window)"
+msgstr "(se abre en nueva ventana)"
+
+#: classes/class-folio-super-agora-widget-users.php:245
+msgid "There aren't classroom mates"
+msgstr "No hay compañeros de clase activos."
+
+#: classes/class-folio-super-agora-widget-users.php:265
+#, php-format
+msgid "%1$s participants of %2$s classrooms"
+msgstr "%1$s participantes de %2$s aulas"
+
+#: classes/class-folio-super-agora-widget-users.php:306
+msgid "Surnames"
+msgstr "Apellidos"
+
+#: classes/class-folio-super-agora-widget-users.php:314
+#: classes/class-folio-super-agora-widget-users.php:324
+msgid "Ascending"
+msgstr "Ascendente"
+
+#: classes/class-folio-super-agora-widget-users.php:329
+msgid "Descending"
+msgstr "Descendente"
+
+#: folio-super-agora.php:83
+#, php-format
+msgid ""
+"%sFolio Super Agora%s requires %sPortafolis Create Site%s to be installed & "
+"activated!"
+msgstr ""
+"%sFolio SuperÁgora%s requiere la instalación y activación de %sPortafolis "
+"Create Site%s"
+
+#: folio-super-agora.php:97
+msgid "Back to previos page"
+msgstr "Volver a la página anterior"
