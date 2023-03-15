@@ -9,6 +9,10 @@
  * @subpackage 		Super
  */
 
+require_once ABSPATH . '/wp-content/plugins/uocapi/uocapi.php';
+
+use Edu\Uoc\Te\Uocapi\Model\Vo\Classroom;
+
 class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 
 	/**
@@ -154,7 +158,15 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 		?>
 		<hr>
 		<h2><?php esc_html_e( 'SuperAgora Sync', 'folio-super-agora' ); ?></h2>
-		<p><?php esc_html_e( 'Here you can sync the SuperAgora ActiUOCs, SuperTags and Users.', 'folio-super-agora' ); ?></p>
+		<p>
+			<?php 
+			if ( FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS ) {
+				esc_html_e( 'Here you can sync the SuperAgora ActiUOCs, SuperTags and Users.', 'folio-super-agora' ); 
+			} else{
+				esc_html_e( 'Here you can sync the SuperAgora ActiUOCs and Users.', 'folio-super-agora' ); 
+			}
+			?>
+		</p>
 
 		<?php 
 		if ( ! empty( $_POST['action'] ) && $_POST['action'] === 'sync' ) {
@@ -332,7 +344,7 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 
 		}
 
-		$this->superagora_sync_actiuocs();
+		$this->superagora_sync_actiuocs($output);
 
 		return $output;
 	}
@@ -350,13 +362,15 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 			get_bloginfo( 'name' ) . ' (subject)'
 		);
 
+		$classroom = new Classroom();
+		$classroom->setId( 'superagora_' . get_current_blog_id() );
+		$classroom->setFatherId( 'superagora_' . get_current_blog_id() . '_subject' );
+		$classroom->setCode( 'superagora' );
+		$classroom->setTitle( get_bloginfo( 'name' ) );
+		$classroom->setInstitution( 1 );
+
 		// Create "dummy clsasroom" for SuperAgora if not exist
-		uoc_create_site_add_classroom_if_not_exist_data(
-			'superagora_' . get_current_blog_id(),
-			'superagora_' . get_current_blog_id() . '_subject',
-			'superagora',
-			get_bloginfo( 'name' )
-		);
+		uoc_create_site_add_classroom_if_not_exist_data( $classroom );
 
 	}
 
@@ -465,7 +479,7 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 
 		$classrooms = $wpdb->get_results( $wpdb->prepare(
 			"
-			SELECT DISTINCT t.domainId, ct.blog_id FROM $table t
+			SELECT DISTINCT t.domainId, t.parentId, ct.blog_id FROM $table t
 			INNER JOIN $classrooms_table ct ON ct.domainId = t.domainId
 			WHERE %d=%d
 			" . $where,
@@ -507,7 +521,11 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 	private function superagora_sync(){
 
 		$this->superagora_sync_actiuocs();
-		$this->superagora_sync_supertags();
+
+		if ( FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS ) {
+			$this->superagora_sync_supertags();
+		}
+		
 		$this->superagora_sync_users();
 
 		add_settings_error(
@@ -524,23 +542,29 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 	/**
 	 * Update actiuocs taxonomy activity terms
 	 */
-	private function superagora_sync_actiuocs(){
+	private function superagora_sync_actiuocs( $options = false ){
 
-		$options = get_option( $this->settings_option );
+		if ( ! $options ) {
+			$options = get_option( $this->settings_option );
+		}
+
+		//print_r($options);
+
 		$agoras = isset($options['agoras']) ? $options['agoras'] : [];
 
 		foreach ( $agoras as $agora ) {
 			if ( isset( $agora['domainId'] ) ) {
 				$subject = uoc_create_site_get_subject_from_db( $agora['domainId'] );
 				if ( $subject && $subject->parentId > 0 ) {
-
-					$subject_id = $subject->parentId;
-					$term = $this->update_subject_term($subject_id, $subject);
-
+					$term = $this->update_subject_term($subject->parentId, $subject);
 					if ( $term  && ! is_wp_error( $term ) ) {
-						$activities = uoc_create_site_get_activities_from_db( $subject_id );
+						$classroom = new Classroom();
+						$classroom->setId( $subject->domainId );
+						$classroom->setFatherId( $subject->parentId );
+						$classroom->setInstitution( 1 );
+						$activities = uoc_create_site_get_activities_from_db( $classroom );
 						if ( is_array($activities) && count($activities) > 0 ) {
-							uoc_create_site_update_activities_from_db($activities, $subject_id, $term->term_id);
+							uoc_create_site_update_activities_from_db($activities, $classroom, $term->term_id);
 						}
 					}
 				}
@@ -583,7 +607,7 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 		if ($terms && ! is_wp_error( $terms ) ) {
 
 			$super_settings =  $this->is_super();
-			$is_standalone = uoc_create_site_is_classroom_blog() && ! $this->belongs_to_super();
+			$is_standalone = ucs_is_classroom_blog() && ! $this->belongs_to_super();
 			$classroom = false;
 			$agoras = false;
 

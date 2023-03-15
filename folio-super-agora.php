@@ -7,7 +7,7 @@
  * Author URI:      https://tresipunt.com/
  * Text Domain:     folio-super-agora
  * Domain Path:     /languages
- * Version:         1.0.0
+ * Version:         1.0.1
  * Tested up to: 	6.1.1
  * License: 		GNU General Public License v3.0
  * License URI: 	http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'FOLIO_SUPER_AGORA_VERSION' ) ) {
-	define( 'FOLIO_SUPER_AGORA_VERSION', '1.0.0' );
+	define( 'FOLIO_SUPER_AGORA_VERSION', '1.0.1' );
 }
 
 if ( ! defined( 'FOLIO_SUPER_AGORA_URL' ) ) {
@@ -31,6 +31,11 @@ if ( ! defined( 'FOLIO_SUPER_AGORA_URL' ) ) {
 
 if ( ! defined( 'FOLIO_SUPER_AGORA_PATH' ) ) {
 	define( 'FOLIO_SUPER_AGORA_PATH', plugin_dir_path( __FILE__ ) );
+}
+
+// Disable SuperTags functionality
+if ( ! defined( 'FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS' ) ) {
+	define( 'FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS', true );
 }
 
 final class Folio_Super_Agora {
@@ -179,11 +184,14 @@ final class Folio_Super_Agora {
 			new Folio_Super_Agora_Data();
 		}
 
-		if( is_admin() && ! uoc_create_site_is_classroom_blog() && ! uoc_create_site_is_student_blog() ){
+		if( is_admin() && ! ucs_is_classroom_blog() && ! uoc_create_site_is_student_blog() ){
 			new Folio_Super_Agora_Settings();
 		}
 
-		new Folio_Super_Agora_Super_Tags();
+		if (FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS){
+			new Folio_Super_Agora_Super_Tags();
+		}
+
 		new Folio_Super_Agora_Posts();
 		new Folio_Super_Agora_Redirect();
 	
@@ -205,7 +213,7 @@ final class Folio_Super_Agora {
 		}
 
 		// Is SuperAgora or Ágora
-		if ($settings || uoc_create_site_is_classroom_blog() ) {
+		if ( FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS && ( $settings || ucs_is_classroom_blog() ) ) {
 			register_widget('Folio_Super_Agora_Widget_Super_Tags');
 		}
 	}

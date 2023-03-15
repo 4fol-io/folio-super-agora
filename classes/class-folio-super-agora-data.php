@@ -2,6 +2,7 @@
 
 /**
  * Folio SuperAgora Custom DataBase Tables Management
+ * No longer used (delete table if exists)
  * 
  * @since      		1.0.0
  *
@@ -10,6 +11,21 @@
  */
 
 class Folio_Super_Agora_Data extends Folio_Super_Agora_Base {
+
+    /**
+	 * SuperAgora DB Version (not used anymore)
+     * @deprecated deprecated since version 1.0.1
+	 *
+	 * @var string
+	 */
+	protected $db_version = '1.0.0';
+
+    /**
+	 * SuperAgora DB Version Option Key
+	 *
+	 * @var string
+	 */
+	protected $db_version_option = 'folio_superagora_db_version';
 
 
 	/**
@@ -32,42 +48,25 @@ class Folio_Super_Agora_Data extends Folio_Super_Agora_Base {
      */
     public function update_db_check() {
 
-        if (get_site_option($this->db_version_option) !== $this->db_version) {
+        if ( get_site_option($this->db_version_option) ) {
             $this->upgrade_db();
-			update_site_option($this->db_version_option, $this->db_version);
+            delete_site_option($this->db_version_option);
         }
 		
     }
 
-	/**
-     * Creating Site Search Indexed Table
-     *
+
+    /**
+     * Delete SuperAgora posts table if exists
+     * (no longer used)
      * @since 1.0.0
      * 
      */
     private function upgrade_db() {
         global $wpdb;
-
-        $charset_collate = $wpdb->get_charset_collate();
-
-		$table = $this->get_super_post_table();
-
-        $sql = "CREATE TABLE IF NOT EXISTS `{$table}` (
-            `blogId` bigint NOT NULL COMMENT 'Blog of current User Id',
-			`postId` bigint NOT NULL COMMENT 'Post of current blog',
-			`classroomId` varchar(255) NOT NULL COMMENT 'Course identifier related',
-			`institution` decimal(3,0) DEFAULT 1 COMMENT 'Maps the LMS related, 1 is for campus UOC, 2 is for Canvas UOC',
-            `userId` decimal(10,0) NOT NULL COMMENT 'Wordpress User id',
-			`classroomBlogId` bigint NOT NULL COMMENT 'Blog of SuperAgora subject',
-			`classroomPostId` bigint NOT NULL COMMENT 'Post of SuperAgora blog',
-			`created` datetime NOT NULL COMMENT 'Date created',
-			`updated` datetime NOT NULL COMMENT 'Date updated',
-		  	PRIMARY KEY (`blogId`, `postId`, `classroomId`, `institution`)
-        ) $charset_collate;";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-
+        $table = $wpdb->base_prefix . 'uoc_superagora_posts';
+        $sql = "DROP TABLE IF EXISTS $table;";
+        $wpdb->query($sql);
     }
 
 

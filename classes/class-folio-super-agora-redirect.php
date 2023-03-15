@@ -32,7 +32,7 @@ class Folio_Super_Agora_Redirect extends Folio_Super_Agora_Base {
 	 */
 	public function redirect_back() {
 
-		if ( uoc_create_site_is_classroom_blog () ) {
+		if ( ucs_is_classroom_blog () ) {
 			$super = get_option( $this->superagora_option );
 			if ( $super ) {
 				$options = get_blog_option( $super, $this->settings_option );
@@ -59,7 +59,7 @@ class Folio_Super_Agora_Redirect extends Folio_Super_Agora_Base {
 	 */
 	public function redirect_front() {
 
-		if ( uoc_create_site_is_classroom_blog () ) {
+		if ( ucs_is_classroom_blog () ) {
 			$super = get_option( $this->superagora_option, 0 );
 			if ( $super ) {
 				$options = get_blog_option( $super, $this->settings_option );

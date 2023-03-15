@@ -13,5 +13,10 @@ Management of SuperAgora and SuperTags with ActiFolios, Participants and SuperTa
 
 ### Changelog
 
+
+#### v1.0.1
+- Disable SuperTags
+
+
 #### v1.0.0
 - Initial release

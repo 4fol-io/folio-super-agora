@@ -64,7 +64,7 @@ class Folio_Super_Agora_Super_Tags extends Folio_Super_Agora_Base {
 		);
 
 		// Allo manage only if is SuperAgora or Standalone Agora
-		$is_standalone = uoc_create_site_is_classroom_blog() && ! $this->belongs_to_super();
+		$is_standalone = ucs_is_classroom_blog() && ! $this->belongs_to_super();
 		$allow_manage = $this->is_super() || $is_standalone;
 
 		if ( $allow_manage ){
@@ -102,7 +102,7 @@ class Folio_Super_Agora_Super_Tags extends Folio_Super_Agora_Base {
 		if ( ! is_wp_error( $deleted_term ) ) {
 
 			$super_settings =  $this->is_super();
-			$is_standalone = uoc_create_site_is_classroom_blog() && ! $this->belongs_to_super();
+			$is_standalone = ucs_is_classroom_blog() && ! $this->belongs_to_super();
 			$classroom = false;
 
 			if ( $super_settings ) { // is a SuperAgora propague to Agoras
@@ -148,7 +148,7 @@ class Folio_Super_Agora_Super_Tags extends Folio_Super_Agora_Base {
 		if ($term && ! is_wp_error( $term ) ) {
 
 			$super_settings =  $this->is_super();
-			$is_standalone = uoc_create_site_is_classroom_blog() && ! $this->belongs_to_super();
+			$is_standalone = ucs_is_classroom_blog() && ! $this->belongs_to_super();
 			$classroom = false;
 
 			if ( $super_settings ) { // is a SuperAgora

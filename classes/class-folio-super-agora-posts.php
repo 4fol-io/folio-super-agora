@@ -22,10 +22,11 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	 */
 	public function __construct() {
 
-		add_action( 'save_post', 			[ $this, 'saved_post' ], 99, 3 );
-		add_action( 'deleted_post', 		[ $this, 'deleted_post' ] );
-		add_filter( 'get_edit_post_link', 	[ $this, 'get_edit_post_link' ], 10, 3 );
-		add_filter( 'user_has_cap', 		[ $this, 'user_has_caps'], 10, 4 );
+		add_action( 'save_post', 						[ $this, 'saved_post' ], 99, 3 );
+		add_action( 'deleted_post', 					[ $this, 'deleted_post' ] );
+		add_filter( 'get_edit_post_link', 				[ $this, 'get_edit_post_link' ], 10, 3 );
+		add_filter( 'user_has_cap', 					[ $this, 'user_has_caps'], 10, 4 );
+		add_filter( 'can_user_add_classroom_comments', 	[ $this, 'can_user_add_classroom_comments'], 10, 1 );
 
 
 	}
@@ -91,14 +92,15 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 					}
 				}
 				
+				// NOTE: CreateSite plugin already deletes the posts of the superagora
+				/*
 				$to_delete = $this->get_super_posts_to_delete( $blog_id, $post_id, $superagoras_ids );
-            
+
 				foreach ( $to_delete as $superagora ) {
 					$this->delete_external_post_action( $post_id, $blog_id, $superagora );
 				}
+				*/
 			}
-		}else{
-
 		}
 	
 		return $post_id;
@@ -250,7 +252,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	private function update_external_post( $external_post, $blog_id, $post, $subject, $new_post_id, $user_id ) {
 		global $wpdb;
 
-		$table = $this->get_super_post_table();
+		$table = uoc_create_site_get_uoc_post_user_table();
+
 		if ( $external_post ) {
 			$wpdb->query( $wpdb->prepare(
 				"UPDATE $table SET updated=now() WHERE blogId = %d AND postId=%d AND classroomId=%s",
@@ -281,6 +284,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 		wp_set_object_terms( $new_post_id, $subject->activities, 'actiuoc' );
 		switch_to_blog( $blog_id );
 	}
+
+
 	
 	/**
 	 * Delete extenal post
@@ -314,7 +319,7 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 
 		switch_to_blog( $external_post->classroomBlogId );
 		
-		$table = $this->get_super_post_table();
+		$table = uoc_create_site_get_uoc_post_user_table();
 
 		wp_delete_post( $external_post->classroomPostId );
 
@@ -342,7 +347,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	private function get_external_post( $blog_id, $post_id, $classroom_id ) {
 		global $wpdb;
 
-		$table = $this->get_super_post_table();
+		$table = uoc_create_site_get_uoc_post_user_table();
+
 		$external_post   = $wpdb->get_row( $wpdb->prepare(
 			"SELECT * FROM $table WHERE blogId = %d AND postId = %d AND classroomId = %d",
 			array( $blog_id, $post_id, $classroom_id )
@@ -362,7 +368,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	private function get_external_posts( $blog_id, $post_id ) {
 		global $wpdb;
 
-		$table = $this->get_super_post_table();
+		$table = uoc_create_site_get_uoc_post_user_table();
+
 		$external_posts = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM $table WHERE blogId = %d AND postId = %d",
 			array( $blog_id, $post_id )
@@ -382,7 +389,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	function get_original_post( $classroomBlogId, $classroomPostId ) {
 		global $wpdb;
 
-		$table = $this->get_super_post_table();
+		$table = uoc_create_site_get_uoc_post_user_table();
+
 		$original_post = $wpdb->get_row( $wpdb->prepare(
 			"SELECT * FROM $table WHERE classroomBlogId = %d AND classroomPostId = %d",
 			array( $classroomBlogId, $classroomPostId )
@@ -393,6 +401,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 
 	/**
 	 * Get super agora posts to delete
+	 * @deprecated deprecated since version 1.0.1
+	 * (unnecesary: CreateSite plugin already deletes external SuperAgora posts)
 	 */
 	private function get_super_posts_to_delete( $blog_id, $post_id, $superagoras ) {
 		global $wpdb;
@@ -400,11 +410,18 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 		if ( count( $superagoras ) == 0 ) {
 			$superagoras = array( 0 );
 		}
-		$table = $this->get_super_post_table();
+
+		$table = uoc_create_site_get_uoc_post_user_table();
+		
 		$external_posts   = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM $table WHERE blogId = %d AND postId = %d AND classroomId NOT IN 
-			(" . implode( ', ', array_fill( 0, count( $superagoras ), '%s' ) ) . ")",
-			array_merge( array( $blog_id, $post_id ), $superagoras )
+			(" . implode( ', ', array_fill( 0, count( $superagoras ), '%s' ) ) . ")
+			AND classroomId LIKE 'superagora_%'",
+			array_merge( 
+				array( $blog_id, $post_id ), 
+				$superagoras, 
+				array( '%' . $wpdb->esc_like('superagora_') )
+			)
 		) );
 	
 		return $external_posts;
@@ -414,7 +431,7 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
      * Get superagora edit post link
      */
 	public function get_edit_post_link( $link, $post_id, $context ) {
-		if ( ! uoc_create_site_is_classroom_blog() && ! uoc_create_site_is_student_blog() ) {
+		if ( ! ucs_is_classroom_blog() && ! uoc_create_site_is_student_blog() ) {
 			$is_superagora = get_option( $this->settings_option );
 			if ( $is_superagora ) {
 				$blog_id   = get_current_blog_id();
@@ -434,10 +451,25 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	}
 
 	/**
+	 * Check if current user can add classroom comments in superagora
+	 * @param bool $in_classroom
+	 * @return bool
+	 */
+	public function can_user_add_classroom_comments( $in_classroom ){
+		if ( $this->is_super() ){
+			$classroom = $this->get_super_classroom_id( get_current_blog_id() );
+			$users = $this->get_agora_classroom_users( $classroom );
+			$index = array_search(get_current_user_id(), array_column($users, 'userId'));
+			return ( $index !== false );
+		}
+		return $in_classroom;
+	}
+
+	/**
 	 * Enable capabilities for post author
 	 */
 	public function user_has_caps( $allcaps, $caps, $args, $user ) {
-		if ( ! uoc_create_site_is_classroom_blog() && ! uoc_create_site_is_student_blog() && count( $args ) == 3 && $args[0] == 'edit_post' ) {
+		if ( ! ucs_is_classroom_blog() && ! uoc_create_site_is_student_blog() && count( $args ) == 3 && $args[0] == 'edit_post' ) {
 			//then check if user is the author
 			$current_user_id = $args[1];
 			$post_id         = $args[2];

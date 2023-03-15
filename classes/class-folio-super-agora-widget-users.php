@@ -9,8 +9,12 @@
  * @subpackage 		Super
  */
 
-class Folio_Super_Agora_Widget_Users extends WP_Widget
-{
+
+require_once ABSPATH . '/wp-content/plugins/uocapi/uocapi.php';
+
+use Edu\Uoc\Te\Uocapi\Model\Vo\Classroom;
+
+class Folio_Super_Agora_Widget_Users extends WP_Widget {
 
 	/**
 	 * Sets up the widget
@@ -49,8 +53,12 @@ class Folio_Super_Agora_Widget_Users extends WP_Widget
 
 			if ( count($agoras) > 0 ) {
 				foreach ( $agoras as $agora ) {
-					if ( isset( $agora['domainId'] ) ) {
-						$classroom = uoc_create_site_get_classroom_by_id( $agora['domainId'] );
+					if ( isset( $agora['domainId'] ) && isset( $agora['parentId'] ) ) {
+						$uclassroom = new Classroom();
+						$uclassroom->setId( $agora['domainId'] );
+						$uclassroom->setFatherId( $agora['parentId'] );
+						$uclassroom->setInstitution( 1 );
+						$classroom = uoc_create_site_get_classroom_by_id( $uclassroom );
 						if( $classroom ) {
 							$classroom->name = $this->get_classroom_title($classroom);
 							$classroom->is_user_class = in_array($classroom->domainId, array_column($user_classrooms, 'domainId')) ? 1 : 0;

@@ -12,13 +12,6 @@
 class Folio_Super_Agora_Base {
 
 	/**
-	 * SuperAgora DB Version
-	 *
-	 * @var string
-	 */
-	protected $db_version = '1.0.0';
-
-	/**
 	 * SuperAgora settings base slug for submenu URL in the settings page and to verify variables.
 	 *
 	 * @var string
@@ -46,26 +39,6 @@ class Folio_Super_Agora_Base {
 	 */
 	protected $supertag_tx_key = 'super_tag';
 
-	/**
-	 * SuperAgora DB Version Option Key
-	 *
-	 * @var string
-	 */
-	protected $db_version_option = 'folio_superagora_db_version';
-
-	/**
-	 * SuperAgora Posts Table Key
-	 */
-	protected $super_posts_table_key = 'uoc_superagora_posts';
-	
-	/**
-	 * Get SuperAgora Posts Table
-	 */
-	protected function get_super_post_table () {
-		global $wpdb;
-	
-		return $wpdb->base_prefix . $this->super_posts_table_key;
-	}
 	
 	/**
 	 * Get SuperAgora Classroom Id from blog_id
