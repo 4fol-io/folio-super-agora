@@ -271,6 +271,28 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 		$html = '<input type="text" id="folio_superagora_classrooms" name="'. $this->settings_option .'[classrooms]" value="' . $codes_str . '" class="regular-text">';
 		$html .= '<p class="description">'  . $args[0] . '</p>';
 
+		if (count($codes)){
+			$agoras = isset($options['agoras']) ? $options['agoras'] : [];
+			if (count($agoras)){
+				$html .= '<h4 style="margin:.5rem 0">' . __('Classrooms found:', 'folio-super-agora') . '</h4>';
+				foreach ( $agoras as $agora ) {
+					switch_to_blog($agora['blog_id']);
+					$site_url = get_bloginfo( 'url' );
+					$site_name = get_bloginfo( 'blog_name' );
+					restore_current_blog();
+					if ( $site_url ){
+						$html .= sprintf(
+							'<a href="%s">%s</a><br>',
+							esc_url( $site_url ),
+							$site_name 
+						);
+					}
+				}
+			}else{
+				$html .= '<p class="description"><i>' . __('No classrooms found', 'folio-super-agora') . '</i></p>';
+			}
+		}
+
 		echo $html;
 
 	}
@@ -319,6 +341,8 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 
 		if($output['enabled']) {
 
+			update_site_meta( get_current_blog_id(), $this->is_super_meta_key, 1 );
+
 			if ($old_enabled){ // enable added agoras and disable removed agoras
 				
 				if( count($removed) ){
@@ -339,10 +363,14 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 
 		} elseif ( $old_enabled ){ // remove all agoras
 
+			delete_site_meta( get_current_blog_id(), $this->is_super_meta_key );
+
 			$this->remove_superagora_classroom();
 			$this->disable_agoras($output['agoras']);
 
 		}
+
+		wpmu_update_blogs_date();
 
 		$this->superagora_sync_actiuocs($output);
 
@@ -477,6 +505,7 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 			return [];
 		}
 
+		// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 		$classrooms = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT DISTINCT t.domainId, t.parentId, ct.blog_id FROM $table t
@@ -498,9 +527,9 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 		$term = get_term_by( 'slug', $subject_id, 'actiuoc' );
 
 		if ( ! $term ) {
-			$term = wp_insert_term ( 
+			// TODO: comentar con @antoni... Institution?
+			$term = ucs_insert_actiuoc_term( 
 				$subject->name . ' ' . $subject->code,
-				'actiuoc',
 				array(
 					'description' => $subject->name,
 					'slug'        => $subject_id,
@@ -555,12 +584,14 @@ class Folio_Super_Agora_Settings extends Folio_Super_Agora_Base {
 		foreach ( $agoras as $agora ) {
 			if ( isset( $agora['domainId'] ) ) {
 				$subject = uoc_create_site_get_subject_from_db( $agora['domainId'] );
+				// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 				if ( $subject && $subject->parentId > 0 ) {
 					$term = $this->update_subject_term($subject->parentId, $subject);
 					if ( $term  && ! is_wp_error( $term ) ) {
 						$classroom = new Classroom();
 						$classroom->setId( $subject->domainId );
 						$classroom->setFatherId( $subject->parentId );
+						// TODO: comentar con @antoni... Institution siempre 1?
 						$classroom->setInstitution( 1 );
 						$activities = uoc_create_site_get_activities_from_db( $classroom );
 						if ( is_array($activities) && count($activities) > 0 ) {

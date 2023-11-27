@@ -7,7 +7,7 @@
  * Author URI:      https://tresipunt.com/
  * Text Domain:     folio-super-agora
  * Domain Path:     /languages
- * Version:         1.0.1
+ * Version:         1.0.2
  * Tested up to: 	6.1.1
  * License: 		GNU General Public License v3.0
  * License URI: 	http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'FOLIO_SUPER_AGORA_VERSION' ) ) {
-	define( 'FOLIO_SUPER_AGORA_VERSION', '1.0.1' );
+	define( 'FOLIO_SUPER_AGORA_VERSION', '1.0.2' );
 }
 
 if ( ! defined( 'FOLIO_SUPER_AGORA_URL' ) ) {
@@ -35,7 +35,7 @@ if ( ! defined( 'FOLIO_SUPER_AGORA_PATH' ) ) {
 
 // Disable SuperTags functionality
 if ( ! defined( 'FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS' ) ) {
-	define( 'FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS', true );
+	define( 'FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS', false );
 }
 
 final class Folio_Super_Agora {
@@ -143,6 +143,8 @@ final class Folio_Super_Agora {
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-base.php';
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-data.php';
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-settings.php';
+		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-network.php';
+		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-network-list.php';
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-supertags.php';
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-posts.php';
 		require_once FOLIO_SUPER_AGORA_PATH . 'classes/class-folio-super-agora-redirect.php';
@@ -186,6 +188,10 @@ final class Folio_Super_Agora {
 
 		if( is_admin() && ! ucs_is_classroom_blog() && ! uoc_create_site_is_student_blog() ){
 			new Folio_Super_Agora_Settings();
+		}
+
+		if( is_admin() && is_multisite() ){
+			new Folio_Super_Agora_Network();
 		}
 
 		if (FOLIO_SUPER_AGORA_ENABLE_SUPERTAGS){

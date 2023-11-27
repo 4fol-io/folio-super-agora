@@ -53,10 +53,13 @@ class Folio_Super_Agora_Widget_Users extends WP_Widget {
 
 			if ( count($agoras) > 0 ) {
 				foreach ( $agoras as $agora ) {
+					// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 					if ( isset( $agora['domainId'] ) && isset( $agora['parentId'] ) ) {
 						$uclassroom = new Classroom();
 						$uclassroom->setId( $agora['domainId'] );
+						// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 						$uclassroom->setFatherId( $agora['parentId'] );
+						// TODO: comentar con @antoni... Institution siempre 1?
 						$uclassroom->setInstitution( 1 );
 						$classroom = uoc_create_site_get_classroom_by_id( $uclassroom );
 						if( $classroom ) {
@@ -135,6 +138,7 @@ class Folio_Super_Agora_Widget_Users extends WP_Widget {
 		echo $output;
 	}
 
+	// TODO: comentar con @antoni, OJO: son identicos estos metodos que los de class-folio-super-agora-widget-activities.php
 	/**
 	 * Get user classrooms
 	 * @return array
@@ -152,6 +156,9 @@ class Folio_Super_Agora_Widget_Users extends WP_Widget {
 		$classrooms_table      = uoc_create_site_get_classrooms_table();
 		$classrooms_user_table = uoc_create_site_get_uoc_classrooms_user_table();
 
+		// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
+		// TODO: comentar con @antoni, cuidado, se pone a mano el institution a 1 en todos lados pero aqui se obvia... 
+		// en este caso va a recuperar classrooms de canvas tambien!
 		$classrooms = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT c.domainId, c.parentId, c.code, u.is_teacher FROM $classrooms_table AS c 

@@ -26,6 +26,12 @@ class Folio_Super_Agora_Base {
 	protected $settings_option = 'folio_superagora_settings';
 
 	/**
+	 * Site is SuperAgora meta key
+	 * @var string
+	 */
+	protected $is_super_meta_key = 'is_superagora';
+
+	/**
 	 * Agoras that belongs to SuperAgora Option Key
 	 *
 	 * @var string
@@ -38,6 +44,8 @@ class Folio_Super_Agora_Base {
 	 * @var string
 	 */
 	protected $supertag_tx_key = 'super_tag';
+
+
 
 	
 	/**
@@ -58,12 +66,23 @@ class Folio_Super_Agora_Base {
 	 * Check if a site is superagora
 	 * 
 	 * @param int $blog_id Blog ID (optional)
-	 * @return array SuperAgora settings
+	 * @return array|boolean SuperAgora settings or false if not
 	 */
 	protected function is_super ( $blog_id = false ) {
-		if ( ! $blog_id ) $blog_id = get_current_blog_id();
+		if ( ! $blog_id ) {
+			$blog_id = get_current_blog_id();
+		}
+
 		$settings = get_blog_option( $blog_id, $this->settings_option, false );
-		return $settings;
+
+		if ( $settings ){
+			$enabled = isset($settings['enabled']) ? intval($settings['enabled']) : 0;
+			if ($enabled){
+				return $settings;
+			}
+		}
+
+		return false;
 	}
 
 	/**

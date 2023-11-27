@@ -23,7 +23,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	public function __construct() {
 
 		add_action( 'save_post', 						[ $this, 'saved_post' ], 99, 3 );
-		add_action( 'deleted_post', 					[ $this, 'deleted_post' ] );
+		// FIXME: Revisar la function deleted_post
+		// add_action( 'deleted_post', 					[ $this, 'deleted_post' ] );
 		add_filter( 'get_edit_post_link', 				[ $this, 'get_edit_post_link' ], 10, 3 );
 		add_filter( 'user_has_cap', 					[ $this, 'user_has_caps'], 10, 4 );
 		add_filter( 'can_user_add_classroom_comments', 	[ $this, 'can_user_add_classroom_comments'], 10, 1 );
@@ -58,8 +59,8 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 				}
 
 				foreach ( $subjects as $subject ) {
-					if ( isset($subject->other_blog_id) ) {
-						$super = get_blog_option( $subject->other_blog_id, $this->superagora_option, 0 );
+					foreach ($subject->classrooms_blogs as $classroom_id => $classroom_blog_id) {
+						$super = get_blog_option( $classroom_blog_id, $this->superagora_option, 0 );
 						if ( $super ) {
 							$classroom_id = $this->get_super_classroom_id($super);
 							if (! in_array($classroom_id, $superagoras_ids)){
@@ -67,6 +68,7 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 									'classroomId' 	=> $classroom_id, 
 									'other_blog_id' => $super,
 									'activities'	=> isset($subject->activities) ? $subject->activities : [],
+									'classrooms_blogs' => $subject->classrooms_blogs,
 								);
 								$superagoras_ids[] = $classroom_id;
 							}else{
@@ -80,15 +82,18 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 					}
 				}
 
+				// Aunque se llame $superagoras... es una lista de algo parecido a $subjects
 				foreach ( $superagoras as $superagora ) {
-					switch ( $post_visibility ) {
-						case PORTAFOLIS_UOC_ACCESS_PRIVATE: 
-							//delete if exist on external blog
-							$this->delete_external_post( $post, $superagora, $blog_id );
-							break;
-						default: 
-							//false, public, uoc, subject and password
-							$this->create_or_update_post( $post, $superagora, $student_id, $blog_id );
+					foreach ( $superagora->classrooms_blogs as $classroom_id => $classroom_blog_id ) {
+						switch ( $post_visibility ) {
+							case PORTAFOLIS_UOC_ACCESS_PRIVATE: 
+								//delete if exist on external blog
+								$this->delete_external_post( $post, $classroom_id, $blog_id );
+								break;
+							default: 
+								//false, public, uoc, subject and password
+								$this->create_or_update_post( $post, $classroom_id, $student_id, $blog_id, $classroom_blog_id );
+						}
 					}
 				}
 				
@@ -109,6 +114,9 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	/**
 	 * Deleted post
 	 */
+	/*
+	FIXME: No tiene sentido esto, la llamada a delete_external_post la hace pasando 
+	unos parametros que no corresponden, revisar (he comentado el hook tambien)
 	public function deleted_post( $post_id ) {
 
 		//The user is editing his personal blog
@@ -128,128 +136,127 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	
 		return $post_id;
 	}
+	*/
 
 	/**
 	 * Create or update post
 	 */
-	private function create_or_update_post( $post, $subject, $user_id, $blog_id ) {
-		if ( $subject->other_blog_id > 0 ) {
-	
-			$external_post = $this->get_external_post( $blog_id, $post->ID, $subject->classroomId );
-			$post          = PortafolioDuplicate::getFilteredS3Content( $post );
-			$my_post       = $post->to_array();
-			if ( $external_post ) {
-				$my_post['ID'] = $external_post->classroomPostId;
-			} else {
-				unset( $my_post['ID'] );
-			}
-
-			// Get SuperTags from original post
-			$supertags = apply_filters( 'folio-supertags/get', [], $post->ID, $blog_id );
-
-			$post_thumbnail_id = get_post_thumbnail_id( $post->ID );
-			$image_url         = false;
-			if ( ! empty( $post_thumbnail_id ) ) {
-				$image_url = wp_get_attachment_image_src( $post_thumbnail_id, 'full' );
-				$image_url = count( $image_url ) > 0 ? $image_url[0] : false;
-			}
-	
-			// We are using S3 uploader we don't need to change url
-			$source_blog_url = site_url();
-			switch_to_blog( $subject->other_blog_id );
-			$destination_blog_url = site_url();
-			$parserPortfolio = new PortafolioCreatesiteParseContent( 
-				$source_blog_url, 
-				$destination_blog_url, 
-				$blog_id, 
-				$subject->other_blog_id 
-			);
-			switch_to_blog( $subject->other_blog_id );
-			$my_post['post_content'] = $parserPortfolio->uoc_portfolio_create_site_parse_content( $my_post['post_content'] );
-	
-			// Insert or UPDATE the post into the database
-			$new_post_id = wp_insert_post( $my_post );
-			if ( is_wp_error( $new_post_id ) ) {
-				$error = "Error generating SuperAgora external post " . print_r( $new_post_id, true );
-				error_log( $error );
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					wp_die( $error );
-				}
-			}
-
-			// Sync SuperTags to new post
-			do_action( 'folio-supertags/set', $supertags, $new_post_id, $subject->other_blog_id );
-	
-			if ( $image_url ) {
-				// Add Featured Image to Post
-				$arrContextOptions = array(
-					"ssl" => array(
-						"verify_peer"      => false,
-						"verify_peer_name" => false,
-					),
-				);
-				$upload_dir        = wp_upload_dir(); // Set upload folder
-				$image_data        = file_get_contents ( 
-					$image_url, 
-					false, 
-					stream_context_create( $arrContextOptions ) 
-				); // Get image data
-				$filename          = basename( $image_url ); // Create image file name
-	
-				// Check folder permission and define file location
-				if ( wp_mkdir_p( $upload_dir['path'] ) ) {
-					$file = $upload_dir['path'] . '/' . $filename;
-				} else {
-					$file = $upload_dir['basedir'] . '/' . $filename;
-				}
-	
-				// Create the image  file on the server
-				file_put_contents( $file, $image_data );
-	
-				// Check image file type
-				$wp_filetype = wp_check_filetype( $filename, null );
-	
-				// Set attachment data
-				$attachment = array(
-					'post_mime_type' => $wp_filetype['type'],
-					'post_title'     => sanitize_file_name( $filename ),
-					'post_content'   => '',
-					'post_status'    => 'inherit'
-				);
-	
-				// Create the attachment
-				$attach_id = wp_insert_attachment( $attachment, $file, $post->ID );
-	
-				// Include image.php
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
-	
-				// Define attachment metadata
-				$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
-	
-				// Assign metadata to attachment
-				wp_update_attachment_metadata( $attach_id, $attach_data );
-	
-				// And finally assign featured image to post
-				set_post_thumbnail( $new_post_id, $attach_id );
-			} else {
-				if ( ! empty( get_post_thumbnail_id( $new_post_id ) ) ) {
-					delete_post_thumbnail( $new_post_id );
-				}
-			}
-	
-			switch_to_blog( $blog_id );
-	
-			$this->update_external_post( $external_post, $blog_id, $post, $subject, $new_post_id, $user_id );
+	private function create_or_update_post( $post, $classroom_id, $user_id, $blog_id, $classroom_blog_id ) {
+		$external_post = $this->get_external_post( $blog_id, $post->ID, $classroom_id );
+		$post          = PortafolioDuplicate::getFilteredS3Content( $post );
+		$my_post       = $post->to_array();
+		if ( $external_post ) {
+			$my_post['ID'] = $external_post->classroomPostId;
 		} else {
-			$error = "Can not register post because SuperAgora blog subject don't exist " . print_r( $subject, 1 );
-			error_log( $error );
+			unset( $my_post['ID'] );
 		}
+
+		// Get SuperTags from original post
+		$supertags = apply_filters( 'folio-supertags/get', [], $post->ID, $blog_id );
+
+		$post_thumbnail_id = get_post_thumbnail_id( $post->ID );
+		$image_url         = false;
+		if ( ! empty( $post_thumbnail_id ) ) {
+			$image_url = wp_get_attachment_image_src( $post_thumbnail_id, 'full' );
+			$image_url = count( $image_url ) > 0 ? $image_url[0] : false;
+		}
+
+		// We are using S3 uploader we don't need to change url
+		$source_blog_url = site_url();
+		switch_to_blog( $classroom_blog_id );
+		$destination_blog_url = site_url();
+		$parserPortfolio = new PortafolioCreatesiteParseContent( 
+			$source_blog_url, 
+			$destination_blog_url, 
+			$blog_id, 
+			$classroom_blog_id 
+		);
+		switch_to_blog( $classroom_blog_id );
+		$my_post['post_content'] = $parserPortfolio->uoc_portfolio_create_site_parse_content( $my_post['post_content'] );
+
+		// Insert or UPDATE the post into the database
+		$new_post_id = wp_insert_post( $my_post );
+		if ( is_wp_error( $new_post_id ) ) {
+			$error = "Error generating SuperAgora external post " . print_r( $new_post_id, true );
+			error_log( $error );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				wp_die( $error );
+			}
+		}
+
+		// Sync SuperTags to new post
+		do_action( 'folio-supertags/set', $supertags, $new_post_id, $classroom_blog_id );
+
+		if ( $image_url ) {
+			// Add Featured Image to Post
+			$arrContextOptions = array(
+				"ssl" => array(
+					"verify_peer"      => false,
+					"verify_peer_name" => false,
+				),
+			);
+			$upload_dir        = wp_upload_dir(); // Set upload folder
+			$image_data        = file_get_contents ( 
+				$image_url, 
+				false, 
+				stream_context_create( $arrContextOptions ) 
+			); // Get image data
+			$filename          = basename( $image_url ); // Create image file name
+
+			// Check folder permission and define file location
+			if ( wp_mkdir_p( $upload_dir['path'] ) ) {
+				$file = $upload_dir['path'] . '/' . $filename;
+			} else {
+				$file = $upload_dir['basedir'] . '/' . $filename;
+			}
+
+			// Create the image  file on the server
+			file_put_contents( $file, $image_data );
+
+			// Check image file type
+			$wp_filetype = wp_check_filetype( $filename, null );
+
+			// Set attachment data
+			$attachment = array(
+				'post_mime_type' => $wp_filetype['type'],
+				'post_title'     => sanitize_file_name( $filename ),
+				'post_content'   => '',
+				'post_status'    => 'inherit'
+			);
+
+			// Create the attachment
+			$attach_id = wp_insert_attachment( $attachment, $file, $post->ID );
+
+			// Include image.php
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+			// Define attachment metadata
+			$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+
+			// Assign metadata to attachment
+			wp_update_attachment_metadata( $attach_id, $attach_data );
+
+			// And finally assign featured image to post
+			set_post_thumbnail( $new_post_id, $attach_id );
+		} else {
+			if ( ! empty( get_post_thumbnail_id( $new_post_id ) ) ) {
+				delete_post_thumbnail( $new_post_id );
+			}
+		}
+
+		switch_to_blog( $blog_id );
+
+		$this->update_external_post( 
+			$external_post, $blog_id, $post, $classroom_id, 
+			$new_post_id, $user_id, $classroom_blog_id, $subject->activities 
+		);
+	
 	}
 
 	/**
      * Update external post
 	 */
-	private function update_external_post( $external_post, $blog_id, $post, $subject, $new_post_id, $user_id ) {
+	private function update_external_post( $external_post, $blog_id, $post, $classroom_id, $new_post_id, $user_id, $classroom_blog_id, $activities ) {
 		global $wpdb;
 
 		$table = uoc_create_site_get_uoc_post_user_table();
@@ -260,7 +267,7 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 				array(
 					$blog_id,
 					$post->ID,
-					$subject->classroomId
+					$classroom_id
 				)
 			) );
 		} else {
@@ -271,17 +278,17 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 				array(
 					$blog_id,
 					$post->ID,
-					$subject->classroomId,
+					$classroom_id,
 					$user_id,
-					$subject->other_blog_id,
+					$classroom_blog_id,
 					$new_post_id
 				)
 			) );
 		}
 	
-		switch_to_blog( $subject->other_blog_id );
+		switch_to_blog( $classroom_blog_id );
 		wp_delete_object_term_relationships( $new_post_id, 'actiuoc' );
-		wp_set_object_terms( $new_post_id, $subject->activities, 'actiuoc' );
+		wp_set_object_terms( $new_post_id, $activities, 'actiuoc' );
 		switch_to_blog( $blog_id );
 	}
 
@@ -290,20 +297,11 @@ class Folio_Super_Agora_Posts extends Folio_Super_Agora_Base {
 	/**
 	 * Delete extenal post
 	 */
-	private function delete_external_post( $post, $subject, $blog_id ) {
-		if ( $subject->other_blog_id > 0 ) {
-			$external_post = $this->get_external_post( $blog_id, $post->ID, $subject->classroomId );
-	
-			if ( $external_post ) {
-				$this->delete_external_post_action( $post->ID, $blog_id, $external_post );
-			}
-	
-		} else {
-			$error = "Can not delete external SuperAgora post because blog subject don't exist " . print_r( $subject, 1 );
-			error_log( $error );
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				wp_die( $error );
-			}
+	private function delete_external_post( $post, $classroom_id, $blog_id ) {
+		$external_post = $this->get_external_post( $blog_id, $post->ID, $classroom_id );
+
+		if ( $external_post ) {
+			$this->delete_external_post_action( $post->ID, $blog_id, $external_post );
 		}
 	}
 

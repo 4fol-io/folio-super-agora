@@ -33,19 +33,21 @@ class Folio_Super_Agora_Redirect extends Folio_Super_Agora_Base {
 	public function redirect_back() {
 
 		if ( ucs_is_classroom_blog () ) {
-			$super = get_option( $this->superagora_option );
+			$super = get_option( $this->superagora_option, false );
 			if ( $super ) {
-				$options = get_blog_option( $super, $this->settings_option );
-				$enabled = isset($options['enabled']) ? intval($options['enabled']) : 0;
-				$redirect = isset($options['redirect_back']) ? intval($options['redirect_back']) : 0;
-				if( $enabled && $redirect ){
-					switch_to_blog( $super );
-					if ( is_admin() && ! is_user_logged_in() ) {
-						wp_redirect( home_url() );
-					} else {
-						wp_redirect( admin_url() ); 
+				$options = get_blog_option( $super, $this->settings_option, false );
+				if ( $options ){
+					$enabled = isset($options['enabled']) ? intval($options['enabled']) : 0;
+					$redirect = isset($options['redirect_back']) ? intval($options['redirect_back']) : 0;
+					if( $enabled && $redirect ){
+						switch_to_blog( $super );
+						if ( is_admin() && ! is_user_logged_in() ) {
+							wp_redirect( home_url() );
+						} else {
+							wp_redirect( admin_url() ); 
+						}
+						exit;
 					}
-					exit;
 				}
 			}
 		}
@@ -60,15 +62,17 @@ class Folio_Super_Agora_Redirect extends Folio_Super_Agora_Base {
 	public function redirect_front() {
 
 		if ( ucs_is_classroom_blog () ) {
-			$super = get_option( $this->superagora_option, 0 );
+			$super = get_option( $this->superagora_option, false );
 			if ( $super ) {
-				$options = get_blog_option( $super, $this->settings_option );
-				$enabled = isset($options['enabled']) ? intval($options['enabled']) : 0;
-				$redirect = isset($options['redirect_front']) ? intval($options['redirect_front']) : 0;
-				if( $enabled && $redirect ){
-					switch_to_blog( $super );
-                    wp_redirect( home_url() );
-					exit;
+				$options = get_blog_option( $super, $this->settings_option, false );
+				if ( $options ) {
+					$enabled = isset($options['enabled']) ? intval($options['enabled']) : 0;
+					$redirect = isset($options['redirect_front']) ? intval($options['redirect_front']) : 0;
+					if( $enabled && $redirect ){
+						switch_to_blog( $super );
+						wp_redirect( home_url() );
+						exit;
+					}
 				}
 			}
 		}
