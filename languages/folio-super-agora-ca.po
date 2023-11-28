@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Folio Super Agora v1.0.0\n"
-"POT-Creation-Date: 2023-03-15 11:33+0100\n"
+"POT-Creation-Date: 2023-05-25 16:50+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.3.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_n_noop:1,2;_x:1,2c;_nx:4c,1,2;"
 "_nx_noop:4c,1,2;_ex:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;"
@@ -19,6 +19,101 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-2: node_modules\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: assets\n"
+
+#: classes/class-folio-super-agora-network-list.php:38
+msgid "Archived"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:39
+msgctxt "site"
+msgid "Spam"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:40
+msgid "Deleted"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:41
+msgid "Mature"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:65
+msgid "URL"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:66
+msgid "Last Updated"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:67
+msgctxt "site"
+msgid "Registered"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:68
+msgid "Classrooms"
+msgstr "Aules:"
+
+#: classes/class-folio-super-agora-network-list.php:270
+#, php-format
+msgid "%1$s &#8211; %2$s"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:292
+#: classes/class-folio-super-agora-network-list.php:313
+msgid "Y/m/d"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:294
+#: classes/class-folio-super-agora-network-list.php:315
+msgid "Y/m/d g:i:s a"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:297
+msgid "Never"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:342
+#: classes/class-folio-super-agora-network-list.php:359
+#: classes/class-folio-super-agora-settings.php:292
+#: classes/class-folio-super-agora-widget-activities.php:76
+#: classes/class-folio-super-agora-widget-users.php:72
+msgid "No classrooms found"
+msgstr "No s’han trobat aules"
+
+#: classes/class-folio-super-agora-network-list.php:380
+msgid "Main"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:455
+msgid "Edit"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:456
+msgid "Dashboard"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:457
+msgid "Visit"
+msgstr ""
+
+#: classes/class-folio-super-agora-network-list.php:494
+msgid "No SuperAgoras found."
+msgstr "No s’han trobat SuperÀgores."
+
+#: classes/class-folio-super-agora-network.php:45
+#: classes/class-folio-super-agora-network.php:46
+#: classes/class-folio-super-agora-network.php:71
+msgid "SuperAgoras"
+msgstr "SuperÀgores"
+
+#: classes/class-folio-super-agora-network.php:88
+msgid "Superagoras per page"
+msgstr "SuperÀgores per pàgina"
+
+#: classes/class-folio-super-agora-network.php:126
+msgid "Search SuperAgoras"
+msgstr "Cerca SuperÀgores"
 
 #: classes/class-folio-super-agora-settings.php:43
 #: classes/class-folio-super-agora-settings.php:44
@@ -85,7 +180,11 @@ msgstr "No teniu permís per dur a terme aquesta acció"
 msgid "Sync up"
 msgstr "Sincronitza"
 
-#: classes/class-folio-super-agora-settings.php:534
+#: classes/class-folio-super-agora-settings.php:277
+msgid "Classrooms found:"
+msgstr "Aules trobades:"
+
+#: classes/class-folio-super-agora-settings.php:562
 msgid "Synchronization finished successfully"
 msgstr "La sincronització ha finalitzat correctament"
 
@@ -163,11 +262,6 @@ msgstr "SuperÀgora ActiFolis"
 #: classes/class-folio-super-agora-widget-activities.php:27
 msgid "Widget SuperAgora ActiFolios"
 msgstr "Giny SuperÀgora ActiFolis"
-
-#: classes/class-folio-super-agora-widget-activities.php:76
-#: classes/class-folio-super-agora-widget-users.php:72
-msgid "No classrooms found"
-msgstr "No s’han trobat aules"
 
 #: classes/class-folio-super-agora-widget-activities.php:83
 msgid "No actiuocs found"

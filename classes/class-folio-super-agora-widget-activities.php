@@ -57,10 +57,12 @@ class Folio_Super_Agora_Widget_Activities extends WP_Widget {
 
 		if ( count($agoras) > 0) {
 			foreach ( $agoras as $agora ) {
+				// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 				if ( isset( $agora['domainId'] ) && isset( $agora['parentId'] ) ) {
 					$uclassroom = new Classroom();
 					$uclassroom->setId( $agora['domainId'] );
 					$uclassroom->setFatherId( $agora['parentId'] );
+					// TODO: comentar con @antoni... Institution siempre 1?
 					$uclassroom->setInstitution( 1 );
 					$classroom = uoc_create_site_get_classroom_by_id( $uclassroom );
 					if( $classroom ) {
@@ -139,8 +141,10 @@ class Folio_Super_Agora_Widget_Activities extends WP_Widget {
 					// Show only if has posts
 					if( $term->count > 0 ){
 						if ( array_key_exists( $parent, $subjects) ) {
+							// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
 							$parentId = $subjects[$parent]->slug;
 							foreach ( $classrooms as $classroom ) {
+
 								if( $classroom->parentId === $parentId ){
 									$classroom->actiuocs[] = $term;
 									$classroom->count += $term->count;
@@ -253,6 +257,9 @@ class Folio_Super_Agora_Widget_Activities extends WP_Widget {
 		$classrooms_table      = uoc_create_site_get_classrooms_table();
 		$classrooms_user_table = uoc_create_site_get_uoc_classrooms_user_table();
 
+		// TODO: comentar con @antoni, CANVAS y parentId (las asignaturas y clases en canvas son la misma y no tienen parentId)
+		// TODO: comentar con @antoni, cuidado, se pone a mano el institution a 1 en todos lados pero aqui se obvia... 
+		// en este caso va a recuperar classrooms de canvas tambien!
 		$classrooms = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT c.domainId, c.parentId, c.code, u.is_teacher FROM $classrooms_table AS c 
@@ -266,7 +273,6 @@ class Folio_Super_Agora_Widget_Activities extends WP_Widget {
 	
 		return $classrooms;
 	}
-
 
 	/**
 	 * Get classroom title
